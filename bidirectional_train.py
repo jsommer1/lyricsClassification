@@ -9,8 +9,8 @@ Created on Wed Dec  4 18:44:02 2019
 
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
+#import matplotlib.pyplot as plt
+#plt.style.use('ggplot')
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split

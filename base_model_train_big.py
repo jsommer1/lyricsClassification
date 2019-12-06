@@ -120,5 +120,7 @@ model.save('my_NN_bigger_data_1.h5')
 Model 1: batch size 10, 75 epochs, downsample & upsample to 10K 
 
 Model 2: batch size 10, 200 epochs, downsample to 10K 
+
+base model w/ no resampling is in the other file base_model_train.py
 """
 

@@ -80,7 +80,7 @@ history = model.fit(X_train, years_train,
 model.save('my_NN_bigger_no_resamp_1.h5')
 
 """
-Model 1: batch size 10, 75 epochs  -> put this on hold for now & try again later
+Model 1: batch size 10, 75 epochs  
 
 
 """

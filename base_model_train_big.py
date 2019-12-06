@@ -63,19 +63,23 @@ class_3 = tr_set[tr_set[:,1]==3]
 class_4 = tr_set[tr_set[:,1]==4]
 class_5 = tr_set[tr_set[:,1]==5]
 
-# Downsample classes 2, 3, 4 to 10K samples
-n_samp = 10000
+n_class_5 = class_5.shape[0]
+
+# Downsample classes 0 thru 4 to # samples in class 5
+n_samp = n_class_5
+class_0_DS = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
+class_1_DS = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
 class_2_DS = resample(class_2, replace=True, n_samples=n_samp, random_state = 27)
 class_3_DS = resample(class_3, replace=True, n_samples=n_samp, random_state = 27)
 class_4_DS = resample(class_4, replace=True, n_samples=n_samp, random_state = 27)
 
 # Upsample class 0,1,5 to 10K samples 
-class_1_US = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
-class_0_US = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
-class_5_US = resample(class_5, replace=True, n_samples=n_samp, random_state = 27)
+#class_1_US = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
+#class_0_US = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
+#class_5_US = resample(class_5, replace=True, n_samples=n_samp, random_state = 27)
 
 # Recombine resampled datasets 
-tr_set_resamp = np.concatenate([class_0_US, class_1_US, class_2_DS, class_3_DS, class_4_DS, class_5_US],axis=0)
+tr_set_resamp = np.concatenate([class_0_DS, class_1_DS, class_2_DS, class_3_DS, class_4_DS, class_5],axis=0)
 
 lyrics_train_resamp = tr_set_resamp[:,0]
 y_train_resamp = tr_set_resamp[:,1]
@@ -114,11 +118,15 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-model.save('my_NN_bigger_data_1.h5')
+model.save('my_NN_bigger_data_3.h5')
 
 """
 Model 1: batch size 10, 75 epochs, downsample & upsample to 10K 
 
 Model 2: batch size 10, 200 epochs, downsample to 10K 
+
+base model w/ no resampling is in the other file base_model_train.py
+
+Model 3: b.s. 10, 75 epochs, downsample everything to size of class 5 
 """
 

@@ -92,7 +92,7 @@ model.compile(loss='categorical_crossentropy',
 
 
 my_batch_size = 30
-n_epochs = 20
+n_epochs = 17
 
 history = model.fit(x_train, years_train, 
                     epochs=n_epochs,
@@ -109,9 +109,9 @@ my_bd : batch size 30, epochs 20,
 max_features = 10000
 max_len = 5800 
 
-my_bidi_fixed_2 : batdch size 30, epochs 20, 
+my_bidi_fixed_2 : batdch size 30, epochs 17
 max_features 10K, max-len 5800 
-
+add dropout & dense layers 
 
 """
 

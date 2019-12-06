@@ -111,6 +111,13 @@ model.add(layers.Dense(10,
                         activation='relu'))
 model.add(Dropout(0.5))
 # 
+#Model type 3
+model.add(layers.Dense(10, 
+                        bias_regularizer=regularizers.l1(0.01),
+                        kernel_regularizer=regularizers.l2(0.01),
+                        activation='relu'))
+model.add(Dropout(0.5))
+#
 
 model.add(layers.Dense(n_classes,activation='softmax'))
 
@@ -128,7 +135,7 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-model.save('my_NN_bigger_data_4.h5')
+model.save('my_NN_bigger_data_5.h5')
 
 """
 MODEL TYPE: 1 Dense layer, 1 softmax layer 
@@ -143,6 +150,10 @@ Model 3: b.s. 10, 75 epochs, downsample everything to size of class 5
 
 MODEL TYPE: Dense -> dropout -> Dense -> Droput -> Softmax 
 
-Model 4: Same as model 3
+Model 4: Same as model 3, including downsampling 
+
+Model 5: Model 4 but add another Dense->Dropout layer
+    -> if this seems to work well then run again but longer
+
 """
 

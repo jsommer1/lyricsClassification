@@ -102,7 +102,7 @@ history = model.fit(x_train, years_train,
 
 model.summary()
 
-model.save('my_bidirectional.h5')
+model.save('my_bidirectional_fixed.h5')
 
 """
 my_bd : batch size 25, epochs 20, 

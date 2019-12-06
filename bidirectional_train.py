@@ -77,12 +77,12 @@ x_test = sequence.pad_sequences(X_test, maxlen = max_len)
 model = Sequential()
 model.add(Embedding(max_features, 128, input_length=max_len))
 model.add(Bidirectional(LSTM(10)))
-# model.add(Dropout(0.5))
-# model.add(layers.Dense(10, 
-#                        bias_regularizer=regularizers.l1(0.01),
-#                        kernel_regularizer=regularizers.l2(0.01),
-#                        activation='relu'))
-# model.add(Dropout(0.5))
+model.add(Dropout(0.5))
+model.add(layers.Dense(10, 
+                        bias_regularizer=regularizers.l1(0.01),
+                        kernel_regularizer=regularizers.l2(0.01),
+                        activation='relu'))
+model.add(Dropout(0.5))
 
 model.add(layers.Dense(n_classes,activation='softmax'))
 
@@ -102,12 +102,15 @@ history = model.fit(x_train, years_train,
 
 model.summary()
 
-model.save('my_bidirectional_fixed.h5')
+model.save('my_bidirectional_fixed_2.h5')
 
 """
 my_bd : batch size 30, epochs 20, 
 max_features = 10000
 max_len = 5800 
+
+my_bidi_fixed_2 : batdch size 30, epochs 20, 
+max_features 10K, max-len 5800 
 
 
 """

@@ -70,12 +70,12 @@ class_3_DS = resample(class_3, replace=True, n_samples=n_samp, random_state = 27
 class_4_DS = resample(class_4, replace=True, n_samples=n_samp, random_state = 27)
 
 # Upsample class 0,1,5 to 10K samples 
-#class_1_US = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
-#class_0_US = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
-#class_5_US = resample(class_5, replace=True, n_samples=n_samp, random_state = 27)
+class_1_US = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
+class_0_US = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
+class_5_US = resample(class_5, replace=True, n_samples=n_samp, random_state = 27)
 
 # Recombine resampled datasets 
-tr_set_resamp = np.concatenate([class_0, class_1, class_2_DS, class_3_DS, class_4_DS, class_5],axis=0)
+tr_set_resamp = np.concatenate([class_0_US, class_1_US, class_2_DS, class_3_DS, class_4_DS, class_5_US],axis=0)
 
 lyrics_train_resamp = tr_set_resamp[:,0]
 y_train_resamp = tr_set_resamp[:,1]
@@ -106,7 +106,7 @@ model.compile(loss='categorical_crossentropy',
 model.summary()
 
 my_batch_size = 10
-n_epochs = 200
+n_epochs = 75
 
 history = model.fit(X_train, years_train, 
                     epochs=n_epochs,
@@ -114,10 +114,10 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-model.save('my_NN_bigger_data_2.h5')
+model.save('my_NN_bigger_data_1.h5')
 
 """
-Model 1: batch size 25, 75 epochs
+Model 1: batch size 10, 75 epochs, downsample & upsample to 10K 
 
 Model 2: batch size 10, 200 epochs, downsample to 10K 
 """

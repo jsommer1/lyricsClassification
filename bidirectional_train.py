@@ -62,7 +62,7 @@ years_train = tf.keras.utils.to_categorical(y_train,num_classes=n_classes)
 years_test = tf.keras.utils.to_categorical(y_test,num_classes=n_classes)
 
 max_features = 10000
-max_len = 6000
+max_len = 5800
 
 tok = text.Tokenizer(num_words=max_features, lower=False)
 
@@ -91,7 +91,7 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 
-my_batch_size = 25
+my_batch_size = 30
 n_epochs = 20
 
 history = model.fit(x_train, years_train, 
@@ -105,9 +105,9 @@ model.summary()
 model.save('my_bidirectional_fixed.h5')
 
 """
-my_bd : batch size 25, epochs 20, 
+my_bd : batch size 30, epochs 20, 
 max_features = 10000
-max_len = 6000 
+max_len = 5800 
 
 
 """

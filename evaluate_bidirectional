@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Dec  4 18:44:02 2019
-
-@author: Joe1
+For evaluating bidirectional model performance
 """
 
 
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-#import matplotlib.pyplot as plt
-#plt.style.use('ggplot')
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
@@ -36,25 +34,21 @@ import os
 # when training on AWS p2.xlarge, this command will ensure that you're training with the GPU: 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-# you can run this command in a separate terminal tab in JupyterLab to monitor and sanity check whether your training is actually using GPU:
+# you can run this command in a separate terminal tab in JupyterLab to 
+#monitor and sanity check whether your training is actually using GPU:
 # $ watch -n 1 nvidia-smi 
 
-
 # Import data
+
+import pandas as pd
+import seaborn as sb
+
 df = pd.read_csv('dataset_clean.csv')
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
 
 lyrics_train, lyrics_test, y_train, y_test = train_test_split(lyrics, years, test_size = 0.3, random_state = 1000)
-
-# TODO: Revisit with TFIDF vectorizer 
-
-# vectorizer = CountVectorizer()
-# vectorizer.fit(lyrics_train)
-
-# X_train = vectorizer.transform(lyrics_train)
-# X_test = vectorizer.transform(lyrics_test)
 
 n_classes=6
 
@@ -74,6 +68,11 @@ x_train = sequence.pad_sequences(X_train,maxlen= max_len)
 x_test = sequence.pad_sequences(X_test, maxlen = max_len)
 
 
+# load model here, test on test set 
+from tensorflow.keras.models import load_model
+from tensorflow.keras.initializers import glorot_uniform
+from tensorflow.keras.utils import CustomObjectScope
+
 model = Sequential()
 model.add(Embedding(max_features, 128, input_length=max_len))
 model.add(Bidirectional(LSTM(10)))
@@ -86,29 +85,26 @@ model.add(Bidirectional(LSTM(10)))
 
 model.add(layers.Dense(n_classes,activation='softmax'))
 
+model.load_weights('my_bidirectional.h5')                   ## CHOOSE MODEL TO EVALUATE HERE
+
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
+# Evaluate Model
+print('\nEvaluating Training Accuracy...')
+loss_train, accuracy_train = model.evaluate(x_train, years_train, verbose=False)
+print('\nEvaluating Testing Accuracy...\n')
+loss_test, accuracy_test = model.evaluate(x_test, years_test, verbose=False)
+print("Training Accuracy: {:.4f}".format(accuracy_train)) # Prev 0.9941
+print("Testing Accuracy:  {:.4f}\n".format(accuracy_test)) # prev 0.3777
 
-my_batch_size = 25
-n_epochs = 20
+# Get confusion matrix 
+from sklearn.metrics import confusion_matrix
 
-history = model.fit(x_train, years_train, 
-                    epochs=n_epochs,
-                    verbose=True,
-                    validation_data=(x_test, years_test),
-                    batch_size=my_batch_size) 
-
-model.summary()
-
-model.save('my_bidirectional.h5')
-
-"""
-my_bd : batch size 25, epochs 20, 
-max_features = 10000
-max_len = 6000 
-
-
-"""
+print('Making predictions...')
+years_pred = model.predict(x_test)
+print('Generating Confusion Matrix...')
+confus_mat = confusion_matrix(np.argmax(years_test,axis=1), np.argmax(years_pred,axis=1))
+print('Confusion Matrix: \n{}'.format(confus_mat))
 

@@ -114,7 +114,7 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-model.save('my_NN_bigger_data_1.h5')
+model.save('my_NN_bigger_data_2.h5')
 
 """
 Model 1: batch size 25, 75 epochs

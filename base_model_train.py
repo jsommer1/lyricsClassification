@@ -61,6 +61,12 @@ input_dim = X_train.shape[1]
 
 model = Sequential()
 model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
+
+model.add(Dropout(0.5))
+model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
+
+
+
 model.add(layers.Dense(n_classes,activation='softmax'))
 
 model.compile(loss='categorical_crossentropy',
@@ -77,14 +83,15 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-model.save('my_NN_no_resamp_2.h5')
+model.save('my_NN_no_resamp_3.h5')
 
 """
 Model 1: batch size 10, 75 epochs  (run on BOW dataset) 
     -> really skewed distribution! prob will be "accurate", but confusion matrix will prob show lots of classifications as 4 
 
-Model 2: batch size 10, 10 epochs (stop before overfitting), run on small dataset
+Model 2: batch size 10, 20 epochs (stop before overfitting), run on small dataset
 
+Model 3: same as Model 2, but add dropout->dense to model
 
 """
 

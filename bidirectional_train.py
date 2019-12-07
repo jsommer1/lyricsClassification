@@ -127,9 +127,10 @@ model.add(Bidirectional(LSTM(10,
                              activation='tanh',
                              input_shape=(1,max_len))))
 model.add(Dropout(0.5))
-#model.add(layers.Dense(10, 
-#                        activation='sigmoid'))
-#model.add(Dropout(0.5))
+
+model.add(layers.Dense(10, 
+                        activation='tanh'))
+model.add(Dropout(0.5))
 
 model.add(layers.Dense(n_classes,activation='softmax'))
 
@@ -169,6 +170,7 @@ add dropout & dense layers
 my_bidi_3 : batch size 20, epochs 100
 removed embedding, just the LSTM, activation = 'tanh' (relu before)
 also using vectorizer instead of tokenizer 
-adding dropout 
+adding dropout -> tr/test acc about 97-98/39-40 
+add dense layer and dropout -> 
 """
 

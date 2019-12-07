@@ -83,7 +83,7 @@ model.save('my_NN_no_resamp_2.h5')
 Model 1: batch size 10, 75 epochs  (run on BOW dataset) 
     -> really skewed distribution! prob will be "accurate", but confusion matrix will prob show lots of classifications as 4 
 
-Model 2: same as Model 1 (run on small dataset)
+Model 2: batch size 10, 10 epochs (stop before overfitting), run on small dataset
 
 
 """

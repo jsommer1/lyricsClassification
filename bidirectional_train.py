@@ -123,14 +123,28 @@ model = Sequential()
 #model.add(Embedding(max_features, 128, input_length=max_len))
 #model.add(Bidirectional(LSTM(10)))
 
+#model.add(Bidirectional(LSTM(10, 
+#                             activation='tanh',
+#                             input_shape=(1,max_len))))
+#model.add(Dropout(0.5))
+#
+#model.add(layers.Dense(10, 
+#                        activation='tanh'))
+#model.add(Dropout(0.5))
+
 model.add(Bidirectional(LSTM(10, 
                              activation='tanh',
-                             input_shape=(1,max_len))))
-model.add(Dropout(0.5))
+                             input_shape=(1,max_len),
+                             return_sequences=True)))
+#model.add(Dropout(0.5))
 
-model.add(layers.Dense(10, 
-                        activation='tanh'))
-model.add(Dropout(0.5))
+model.add(Bidirectional(LSTM(10, 
+                             activation='tanh')))
+#
+#model.add(layers.Dense(10, 
+#                        activation='tanh'))
+
+
 
 model.add(layers.Dense(n_classes,activation='softmax'))
 
@@ -141,7 +155,7 @@ model.compile(loss='categorical_crossentropy',
 #model.summary()
 
 my_batch_size = 20
-n_epochs = 200
+n_epochs = 100
 
 #history = model.fit(x_train, years_train, 
 #                    epochs=n_epochs,
@@ -156,7 +170,7 @@ history = model.fit(x_train_reshape, years_train,
 
 
 
-model.save('my_bidirectional_3.h5')
+model.save('my_bidirectional_4.h5')
 
 """
 my_bd : batch size 30, epochs 20, 
@@ -171,6 +185,9 @@ my_bidi_3 : batch size 20, epochs 100
 removed embedding, just the LSTM, activation = 'tanh' (relu before)
 also using vectorizer instead of tokenizer 
 adding dropout -> tr/test acc about 97-98/39-40 
-add dense layer and dropout -> 
+add dense layer and dropout -> test acc about 40-41 
+
+my_bidi_4: epochs 100, batch size 20, add another LSTM layer to model 3 
+instead of the dropout and dense layer
 """
 

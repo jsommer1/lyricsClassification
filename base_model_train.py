@@ -65,6 +65,11 @@ model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
 model.add(Dropout(0.5))
 model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
 
+model.add(Dropout(0.5))
+model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
+
+model.add(Dropout(0.5))
+model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
 
 
 model.add(layers.Dense(n_classes,activation='softmax'))
@@ -91,7 +96,7 @@ Model 1: batch size 10, 75 epochs  (run on BOW dataset)
 
 Model 2: batch size 10, 20 epochs (stop before overfitting), run on small dataset
 
-Model 3: batch size 100, 20 epochs, but add dropout->dense to model
+Model 3: batch size 100, 20 epochs, but add more layers lmao let's see what happens
 
 """
 

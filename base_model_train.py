@@ -37,7 +37,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # you can run this command in a separate terminal tab in JupyterLab to monitor and sanity check whether your training is actually using GPU:
 # $ watch -n 1 nvidia-smi 
 
-df = pd.read_csv('dataset_clean.csv')   
+df = pd.read_csv('dataset_clean_bow.csv')   
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
@@ -88,7 +88,7 @@ Model 1: batch size 10, 75 epochs  (run on BOW dataset)
 
 Model 2: batch size 10, 20 epochs (stop before overfitting), run on small dataset
 
-Model 3: batch size 10, 100 epochs, add dropout only
+Model 3: batch size 10, 100 epochs, add dropout only, run on big set
 
 """
 

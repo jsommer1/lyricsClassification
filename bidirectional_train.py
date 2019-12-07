@@ -210,9 +210,9 @@ att = layers.Permute((2,1))(att)
 
 dot_out = layers.Dot(axes=1)([drop_3, att])
 
-out = layers.Dense(n_classes,activation='softmax')(dot_out)
+out = layers.Dense(n_classes,activation='softmax')(drop_3)
 
-model = tf.keras.models.Model(inputs=input_1,outputs=drop_3)
+model = tf.keras.models.Model(inputs=input_1,outputs=out)
 
 # Delete from up here if it doesn't work
 

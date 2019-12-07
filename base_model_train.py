@@ -80,7 +80,7 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-model.save('my_NN_no_resamp_3.h5')
+model.save('my_NN_no_resamp_4.h5')
 
 """
 Model 1: batch size 10, 75 epochs  (run on BOW dataset) 

@@ -69,7 +69,7 @@ model.compile(loss='categorical_crossentropy',
 model.summary()
 
 my_batch_size = 10
-n_epochs = 10
+n_epochs = 20
 
 history = model.fit(X_train, years_train, 
                     epochs=n_epochs,

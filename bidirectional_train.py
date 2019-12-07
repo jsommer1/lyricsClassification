@@ -59,7 +59,7 @@ max_features = 10000
 max_len = 1200
 
 # Vectorizer  
-vectorizer = CountVectorizer()
+vectorizer = CountVectorizer(stop_words='english')
 vectorizer.fit(lyrics_train)
 X_train = vectorizer.transform(lyrics_train)
 X_test = vectorizer.transform(lyrics_test)
@@ -270,6 +270,8 @@ bidi_5 : bidi_4 but batch size = 10, also add dense layer -> about
 
 bidi_6: bidi_5 but attempt to add attention -> nah it sucked
 attempt 2: only has lstm , drop, dense -> high 80s / 34% nope this sucks 
-attempt 3: only has lstm, merge mode = sum -> 
+attempt 3: only has lstm, merge mode = sum
+
+bidi_7: bidi_6 but added english stop words 
 """
 

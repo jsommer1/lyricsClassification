@@ -139,7 +139,14 @@ model.add(Bidirectional(LSTM(10,
 model.add(Dropout(0.5))
 
 model.add(Bidirectional(LSTM(10, 
+                             activation='tanh',
+                             return_sequences=True)))
+model.add(Dropout(0.5))
+
+model.add(Bidirectional(LSTM(10, 
                              activation='tanh')))
+model.add(Dropout(0.5))
+
 #
 #model.add(layers.Dense(10, 
 #                        activation='tanh'))
@@ -155,7 +162,7 @@ model.compile(loss='categorical_crossentropy',
 #model.summary()
 
 my_batch_size = 20
-n_epochs = 100
+n_epochs = 30
 
 #history = model.fit(x_train, years_train, 
 #                    epochs=n_epochs,
@@ -188,6 +195,7 @@ adding dropout -> tr/test acc about 97-98/39-40
 add dense layer and dropout -> test acc about 40-41 
 
 my_bidi_4: epochs 100, batch size 20, add another LSTM layer to model 3 
-instead of the dense layer
+instead of the dense layer -> about 93/41 
+add another LSTM and 2 dropouts, epochs down to 30 -> 
 """
 

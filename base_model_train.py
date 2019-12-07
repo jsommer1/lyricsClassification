@@ -62,16 +62,6 @@ input_dim = X_train.shape[1]
 model = Sequential()
 model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
 
-model.add(Dropout(0.5))
-model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
-
-model.add(Dropout(0.5))
-model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
-
-model.add(Dropout(0.5))
-model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
-
-
 model.add(layers.Dense(n_classes,activation='softmax'))
 
 model.compile(loss='categorical_crossentropy',

@@ -66,20 +66,20 @@ class_5 = tr_set[tr_set[:,1]==5]
 n_class_5 = class_5.shape[0]
 
 # Downsample classes 0 thru 4 to # samples in class 5
-n_samp = n_class_5
-class_0_DS = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
-class_1_DS = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
-class_2_DS = resample(class_2, replace=True, n_samples=n_samp, random_state = 27)
-class_3_DS = resample(class_3, replace=True, n_samples=n_samp, random_state = 27)
-class_4_DS = resample(class_4, replace=True, n_samples=n_samp, random_state = 27)
+n_DS = 10000
+class_0_DS = resample(class_0, replace=True, n_samples=n_DS, random_state = 27)
+class_1_DS = resample(class_1, replace=True, n_samples=n_DS, random_state = 27)
+class_2_DS = resample(class_2, replace=True, n_samples=n_DS, random_state = 27)
+class_3_DS = resample(class_3, replace=True, n_samples=n_DS, random_state = 27)
+class_4_DS = resample(class_4, replace=True, n_samples=n_DS, random_state = 27)
 
-# Upsample class 0,1,5 to 10K samples 
+## Upsample class 0,1,5 to 10K samples 
 #class_1_US = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
 #class_0_US = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
 #class_5_US = resample(class_5, replace=True, n_samples=n_samp, random_state = 27)
 
 # Recombine resampled datasets 
-tr_set_resamp = np.concatenate([class_0_DS, class_1_DS, class_2_DS, class_3_DS, class_4_DS, class_5],axis=0)
+tr_set_resamp = np.concatenate([class_0, class_1, class_2_DS, class_3_DS, class_4_DS, class_5],axis=0)
 
 lyrics_train_resamp = tr_set_resamp[:,0]
 y_train_resamp = tr_set_resamp[:,1]
@@ -105,18 +105,18 @@ model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
 
 # Model type 2
 model.add(Dropout(0.5))
-model.add(layers.Dense(10, 
-                        bias_regularizer=regularizers.l1(0.01),
-                        kernel_regularizer=regularizers.l2(0.01),
-                        activation='relu'))
-model.add(Dropout(0.5))
-# 
-#Model type 3
-model.add(layers.Dense(10, 
-                        bias_regularizer=regularizers.l1(0.01),
-                        kernel_regularizer=regularizers.l2(0.01),
-                        activation='relu'))
-model.add(Dropout(0.5))
+#model.add(layers.Dense(10, 
+#                        bias_regularizer=regularizers.l1(0.01),
+#                        kernel_regularizer=regularizers.l2(0.01),
+#                        activation='relu'))
+#model.add(Dropout(0.5))
+## 
+##Model type 3
+#model.add(layers.Dense(10, 
+#                        bias_regularizer=regularizers.l1(0.01),
+#                        kernel_regularizer=regularizers.l2(0.01),
+#                        activation='relu'))
+#model.add(Dropout(0.5))
 #
 
 model.add(layers.Dense(n_classes,activation='softmax'))
@@ -135,7 +135,8 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-model.save('my_NN_bigger_data_5.h5')
+
+model.save('my_NN_bigger_data_6.h5')
 
 """
 MODEL TYPE: 1 Dense layer, 1 softmax layer 
@@ -153,7 +154,8 @@ MODEL TYPE: Dense -> dropout -> Dense -> Droput -> Softmax
 Model 4: Same as model 3, including downsampling 
 
 Model 5: Model 4 but add another Dense->Dropout layer
-    -> if this seems to work well then run again but longer
+    
+Model 6: DS only, batch size 10, 75 epochs, add Dropout 
 
 """
 

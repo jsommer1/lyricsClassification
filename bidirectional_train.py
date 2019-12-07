@@ -212,7 +212,7 @@ dot_out = layers.Dot(axes=1)([drop_3, att])
 
 out = layers.Dense(n_classes,activation='softmax')(dot_out)
 
-model = tf.keras.models.Model(inputs=input_1,outputs=out)
+model = tf.keras.models.Model(inputs=input_1,outputs=drop_3)
 
 # Delete from up here if it doesn't work
 
@@ -246,7 +246,7 @@ history = model.fit(x_train_reshape, years_train,
 
 
 
-model.save('my_bidirectional_7.h5')
+model.save('my_bidirectional_8.h5')
 
 """
 my_bd : batch size 30, epochs 20, 
@@ -279,5 +279,7 @@ attempt 2: only lstm -> still bad
 attempt 3: lstm -> dropout? v bad 
 attempt 4: try full model again w/ stop words 
 attempt 5: kept stop words in (sequential cues!) , removed dense, epochs to 100  
+
+bidi_8: bidi 7 but w/o attention 
 """
 

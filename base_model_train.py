@@ -72,7 +72,7 @@ model.compile(loss='categorical_crossentropy',
 model.summary()
 
 my_batch_size = 10
-n_epochs = 20
+n_epochs = 75
 
 history = model.fit(X_train, years_train, 
                     epochs=n_epochs,
@@ -80,7 +80,7 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-#model.save('my_NN_no_resamp_4.h5')
+model.save('my_NN_no_resamp_4.h5')
 
 """
 Model 1: batch size 10, 75 epochs  (run on BOW dataset) 
@@ -90,7 +90,7 @@ Model 2: batch size 10, 20 epochs (stop before overfitting), run on small datase
 
 Model 3: batch size 10, 100 epochs, add dropout only, run on big set
 
-MOdel 4: model 3 but with dropout of 0.8 instead 
+MOdel 4: batch 10, 75 epochs, stop words, 
 
 """
 

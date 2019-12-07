@@ -79,14 +79,14 @@ class_4_DS = resample(class_4, replace=True, n_samples=n_DS, random_state = 27)
 #class_5_US = resample(class_5, replace=True, n_samples=n_samp, random_state = 27)
 
 # Recombine resampled datasets 
-tr_set_resamp = np.concatenate([class_0, class_1, class_2_DS, class_3_DS, class_4_DS, class_5],axis=0)
+tr_set_resamp = np.concatenate([class_0, class_1, class_2, class_3, class_4, class_5],axis=0)
 
 lyrics_train_resamp = tr_set_resamp[:,0]
 y_train_resamp = tr_set_resamp[:,1]
 
 print('\nData done resampling\n\n')
 
-vectorizer = CountVectorizer()
+vectorizer = CountVectorizer(stop_words='english')
 vectorizer.fit(lyrics_train_resamp)
 
 X_train = vectorizer.transform(lyrics_train_resamp)
@@ -155,6 +155,7 @@ Model 4: Same as model 3, including downsampling
 
 Model 5: Model 4 but add another Dense->Dropout layer
     
+model 6: batch: 10, epochs: 100, just dense-> dropout, stop words, no resamp
 
 """
 

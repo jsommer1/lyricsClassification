@@ -186,7 +186,7 @@ bidi_1 = Bidirectional(LSTM(10,
                              activation='tanh',
                              input_shape=(1,max_len),
                              return_sequences=True))(input_1)
-drop_1 = Dropout(0.5)(bidi_1)
+#drop_1 = Dropout(0.5)(bidi_1)
 #bidi_2 = Bidirectional(LSTM(10, 
 #                             activation='tanh',
 #                             return_sequences=True))(drop_1)
@@ -197,7 +197,7 @@ drop_1 = Dropout(0.5)(bidi_1)
 #dense_1 = layers.Dense(10, 
 #                        activation='tanh')(drop_3)
 
-dense_1 = drop_1
+dense_1 = bidi_1
 
 att = layers.Dense(10,input_dim=10)(dense_1)
 att = layers.Activation('softmax')(att)
@@ -266,7 +266,8 @@ epochs back up to 120 -> back down to like 37 for some reason
 
 bidi_5 : bidi_4 but batch size = 10, also add dense layer -> about 
 
-bidi_6: bidi_5 but attempt to add attention ->
+bidi_6: bidi_5 but attempt to add attention -> nah it sucked
+attempt 2: only has lstm 
 
 """
 

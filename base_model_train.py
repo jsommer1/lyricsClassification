@@ -37,7 +37,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # you can run this command in a separate terminal tab in JupyterLab to monitor and sanity check whether your training is actually using GPU:
 # $ watch -n 1 nvidia-smi 
 
-df = pd.read_csv('dataset_clean_bow.csv')  # TODO: ADD FILE NAME HERE 
+df = pd.read_csv('dataset_clean.csv')   
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
@@ -77,10 +77,11 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-model.save('my_NN_bigger_no_resamp_1.h5')
+model.save('my_NN_no_resamp_1.h5')
 
 """
-Model 1: batch size 10, 75 epochs  (run on BOW dataset)
+Model 1: batch size 10, 75 epochs  (run on BOW dataset) 
+    -> really skewed distribution! prob will be "accurate", but confusion matrix will prob show lots of classifications as 4 
 
 Model 2: same as Model 1 (run on small dataset)
 

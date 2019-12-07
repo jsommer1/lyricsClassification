@@ -194,6 +194,8 @@ drop_1 = Dropout(0.5)(bidi_1)
 #bidi_3 = Bidirectional(LSTM(10, 
 #                             activation='tanh'))(drop_2)
 #drop_3 = Dropout(0.5)(bidi_3)
+
+drop_3 = drop_1
 dense_1 = layers.Dense(10, 
                         activation='tanh')(drop_3)
 

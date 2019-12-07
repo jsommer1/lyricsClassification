@@ -184,21 +184,23 @@ input_1 = layers.Input((1,max_len))
 #LSTM 
 bidi_1 = Bidirectional(LSTM(10, 
                              activation='tanh',
-                             input_shape=(1,max_len)))(input_1)
-#drop_1 = Dropout(0.5)(bidi_1)
+                             input_shape=(1,max_len)),
+                        merge_mode = 'sum')(input_1)
+drop_1 = Dropout(0.5)(bidi_1)
 #bidi_2 = Bidirectional(LSTM(10, 
 #                             activation='tanh',
-#                             return_sequences=True))(drop_1)
+#                             return_sequences=True))(bidi_1)
 #drop_2 = Dropout(0.5)(bidi_2)
-#bidi_3 = Bidirectional(LSTM(10, 
-#                             activation='tanh'))(drop_2)
-drop_3 = Dropout(0.5)(bidi_1)
 
-dense_1 = layers.Dense(10, 
-                        activation='tanh')(drop_3)
+#dense_1 = Bidirectional(LSTM(10, 
+#                             activation='tanh'))(bidi_2)
+#drop_3 = Dropout(0.5)(bidi_3)
+
+#dense_1 = layers.Dense(10, 
+#                        activation='tanh')(drop_1)
 
 
-att = layers.Dense(10,input_dim=10)(dense_1)
+att = layers.Dense(10,input_dim=10)(drop_1)
 att = layers.Activation('softmax')(att)
 att = layers.RepeatVector(10)(att)
 att = layers.Permute((2,1))(att)
@@ -266,7 +268,7 @@ epochs back up to 120 -> back down to like 37 for some reason
 bidi_5 : bidi_4 but batch size = 10, also add dense layer -> about 
 
 bidi_6: bidi_5 but attempt to add attention -> nah it sucked
-attempt 2: only has lstm 
-
+attempt 2: only has lstm , drop, dense -> high 80s / 34% nope this sucks 
+attempt 3: only has lstm, merge mode = sum 
 """
 

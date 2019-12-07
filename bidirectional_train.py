@@ -74,15 +74,44 @@ x_train = sequence.pad_sequences(X_train,maxlen= max_len)
 x_test = sequence.pad_sequences(X_test, maxlen = max_len)
 
 
+# reshape inputs to feed to LSTM
+N_train = x_train.shape[0]
+N_test = x_test.shape[0]
+
+x_train_reshape = np.zeros((N_train, 1,max_len))
+x_test_reshape = np.zeros((N_test, 1,max_len))
+
+years_train_reshape = np.zeros((N_train, 1,n_classes))
+years_test_reshape = np.zeros((N_test, 1,n_classes))
+
+for i in range(N_train): 
+    cur_train_example = np.reshape(x_train[i][:], (max_len,1))
+    cur_train_label = np.reshape(years_train[i][:], (n_classes,1))
+    x_train_reshape[i][:][:] = cur_train_example.T
+    years_train_reshape[i][:][:] = cur_train_label.T
+for j in range(N_test):
+    cur_test_example = np.reshape(x_test[j][:], (max_len,1))
+    cur_test_label = np.reshape(years_test[j][:], (n_classes,1))
+    x_test_reshape[j][:][:] = cur_test_example.T
+    years_test_reshape[j][:][:] = cur_test_label.T
+    
+
+# model.add(layers.Dense(10, input_dim=input_dim, activation='relu')) just for reference 
+
 model = Sequential()
-model.add(Embedding(max_features, 128, input_length=max_len))
-model.add(Bidirectional(LSTM(10)))
-model.add(Dropout(0.5))
-model.add(layers.Dense(10, 
-                        bias_regularizer=regularizers.l1(0.01),
-                        kernel_regularizer=regularizers.l2(0.01),
-                        activation='relu'))
-model.add(Dropout(0.5))
+#model.add(Embedding(max_features, 128, input_length=max_len))
+#model.add(Bidirectional(LSTM(10)))
+
+
+model.add(Bidirectional(LSTM(10, 
+                             activation='relu',
+                             input_shape=(1,max_len))))
+#model.add(Dropout(0.5))
+#model.add(layers.Dense(10, 
+#                        bias_regularizer=regularizers.l1(0.01),
+#                        kernel_regularizer=regularizers.l2(0.01),
+#                        activation='relu'))
+#model.add(Dropout(0.5))
 
 model.add(layers.Dense(n_classes,activation='softmax'))
 
@@ -94,15 +123,20 @@ model.compile(loss='categorical_crossentropy',
 my_batch_size = 30
 n_epochs = 17
 
-history = model.fit(x_train, years_train, 
+#history = model.fit(x_train, years_train, 
+#                    epochs=n_epochs,
+#                    verbose=True,
+#                    validation_data=(x_test, years_test),
+#                    batch_size=my_batch_size) 
+history = model.fit(x_train_reshape, years_train_reshape, 
                     epochs=n_epochs,
                     verbose=True,
-                    validation_data=(x_test, years_test),
-                    batch_size=my_batch_size) 
+                    validation_data=(x_test_reshape, years_test_reshape),
+                    batch_size = my_batch_size) 
 
 model.summary()
 
-model.save('my_bidirectional_fixed_2.h5')
+model.save('my_bidirectional_3.h5')
 
 """
 my_bd : batch size 30, epochs 20, 
@@ -113,5 +147,7 @@ my_bidi_fixed_2 : batdch size 30, epochs 17
 max_features 10K, max-len 5800 
 add dropout & dense layers 
 
+my_bidi_3 : batch size 30, epochs 17
+removed embedding, just the LSTM. 
 """
 

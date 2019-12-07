@@ -48,13 +48,7 @@ years = df['Year'].values
 
 lyrics_train, lyrics_test, y_train, y_test = train_test_split(lyrics, years, test_size = 0.3, random_state = 1000)
 
-# TODO: Revisit with TFIDF vectorizer 
 
-# vectorizer = CountVectorizer()
-# vectorizer.fit(lyrics_train)
-
-# X_train = vectorizer.transform(lyrics_train)
-# X_test = vectorizer.transform(lyrics_test)
 
 n_classes=6
 
@@ -62,21 +56,48 @@ years_train = tf.keras.utils.to_categorical(y_train,num_classes=n_classes)
 years_test = tf.keras.utils.to_categorical(y_test,num_classes=n_classes)
 
 max_features = 10000
-max_len = 5800
+max_len = 1200
 
-tok = text.Tokenizer(num_words=max_features, lower=False)
+# Vectorizer  
+vectorizer = CountVectorizer()
+vectorizer.fit(lyrics_train)
+X_train = vectorizer.transform(lyrics_train)
+X_test = vectorizer.transform(lyrics_test)
 
-tok.fit_on_texts(list(lyrics_train)+list(lyrics_test))
-X_train = tok.texts_to_sequences(lyrics_train)
-X_test = tok.texts_to_sequences(lyrics_test)
+x_train = X_train
+x_test = X_test
+max_len = X_train.shape[1]
 
-x_train = sequence.pad_sequences(X_train,maxlen= max_len)
-x_test = sequence.pad_sequences(X_test, maxlen = max_len)
+# tokenizer 
+#tok = text.Tokenizer(num_words=max_features, lower=False)
+#tok.fit_on_texts(list(lyrics_train)+list(lyrics_test))
+#X_train = tok.texts_to_sequences(lyrics_train)
+#X_test = tok.texts_to_sequences(lyrics_test)
+
+
+# Pad data 
+#x_train = sequence.pad_sequences(X_train,maxlen= max_len)
+#x_test = sequence.pad_sequences(X_test, maxlen = max_len)
 
 
 # reshape inputs to feed to LSTM
 N_train = x_train.shape[0]
 N_test = x_test.shape[0]
+
+
+## TODO: DELETE
+#m = 0
+#for i in range(N_train):
+#    l = len(X_train[i])
+#    if l > m:
+#        m = l
+#for i in range(N_test):
+#    l = len(X_test[i])
+#    if l > m:
+#        m = l
+#print('max len : {}'.format(m))
+
+
 
 x_train_reshape = np.zeros((N_train, 1,max_len))
 x_test_reshape = np.zeros((N_test, 1,max_len))
@@ -85,12 +106,12 @@ years_train_reshape = np.zeros((N_train, 1,n_classes))
 years_test_reshape = np.zeros((N_test, 1,n_classes))
 
 for i in range(N_train): 
-    cur_train_example = x_train[i][:]
+    cur_train_example = x_train[i][:].toarray()[0] 
     cur_train_label = years_train[i][:]
     x_train_reshape[i][:][:] = cur_train_example
     years_train_reshape[i][:][:] = cur_train_label
 for j in range(N_test):
-    cur_test_example = x_test[j][:]
+    cur_test_example = x_test[j][:].toarray()[0]
     cur_test_label = years_test[j][:]
     x_test_reshape[j][:][:] = cur_test_example
     years_test_reshape[j][:][:] = cur_test_label
@@ -147,5 +168,6 @@ add dropout & dense layers
 
 my_bidi_3 : batch size 20, epochs 200
 removed embedding, just the LSTM, activation = 'tanh' (relu before)
+also using vectorizer instead of tokenizer 
 """
 

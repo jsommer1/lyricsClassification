@@ -37,7 +37,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # you can run this command in a separate terminal tab in JupyterLab to monitor and sanity check whether your training is actually using GPU:
 # $ watch -n 1 nvidia-smi 
 
-df = pd.read_csv('dataset_clean_bow.csv')   
+df = pd.read_csv('dataset_clean.csv')   
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
@@ -45,7 +45,7 @@ years = df['Year'].values
 lyrics_train, lyrics_test, y_train, y_test = train_test_split(lyrics, years, test_size = 0.3, random_state = 1000)
 
 
-vectorizer = CountVectorizer()
+vectorizer = CountVectorizer(stop_words='english')
 vectorizer.fit(lyrics_train)
 
 X_train = vectorizer.transform(lyrics_train)
@@ -61,7 +61,7 @@ input_dim = X_train.shape[1]
 
 model = Sequential()
 model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
-model.add(Dropout(0.8)) ## 
+#model.add(Dropout(0.8)) ## 
 
 
 model.add(layers.Dense(n_classes,activation='softmax'))
@@ -72,7 +72,7 @@ model.compile(loss='categorical_crossentropy',
 model.summary()
 
 my_batch_size = 10
-n_epochs = 100
+n_epochs = 20
 
 history = model.fit(X_train, years_train, 
                     epochs=n_epochs,
@@ -80,7 +80,7 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-model.save('my_NN_no_resamp_4.h5')
+#model.save('my_NN_no_resamp_4.h5')
 
 """
 Model 1: batch size 10, 75 epochs  (run on BOW dataset) 

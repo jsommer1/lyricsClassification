@@ -75,7 +75,7 @@ model.compile(loss='categorical_crossentropy',
 model.summary()
 
 my_batch_size = 10
-n_epochs = 20
+n_epochs = 100
 
 history = model.fit(X_train, years_train, 
                     epochs=n_epochs,
@@ -91,7 +91,7 @@ Model 1: batch size 10, 75 epochs  (run on BOW dataset)
 
 Model 2: batch size 10, 20 epochs (stop before overfitting), run on small dataset
 
-Model 3: same as Model 2, but add dropout->dense to model
+Model 3: batch size 100, 20 epochs, but add dropout->dense to model
 
 """
 

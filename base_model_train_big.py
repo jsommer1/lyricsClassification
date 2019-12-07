@@ -127,7 +127,7 @@ model.compile(loss='categorical_crossentropy',
 model.summary()
 
 my_batch_size = 10
-n_epochs = 75
+n_epochs = 100
 
 history = model.fit(X_train, years_train, 
                     epochs=n_epochs,
@@ -155,7 +155,6 @@ Model 4: Same as model 3, including downsampling
 
 Model 5: Model 4 but add another Dense->Dropout layer
     
-Model 6: DS only, batch size 10, 75 epochs, add Dropout 
 
 """
 

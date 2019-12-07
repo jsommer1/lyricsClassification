@@ -184,8 +184,7 @@ input_1 = layers.Input((1,max_len))
 #LSTM 
 bidi_1 = Bidirectional(LSTM(10, 
                              activation='tanh',
-                             input_shape=(1,max_len),
-                             return_sequences=True))(input_1)
+                             input_shape=(1,max_len)))(input_1)
 #drop_1 = Dropout(0.5)(bidi_1)
 #bidi_2 = Bidirectional(LSTM(10, 
 #                             activation='tanh',

@@ -119,7 +119,7 @@ for j in range(N_test):
 
 # model.add(layers.Dense(10, input_dim=input_dim, activation='relu')) just for reference 
 
-model = Sequential()
+#model = Sequential()
 #model.add(Embedding(max_features, 128, input_length=max_len))
 #model.add(Bidirectional(LSTM(10)))
 
@@ -132,31 +132,92 @@ model = Sequential()
 #                        activation='tanh'))
 #model.add(Dropout(0.5))
 
-model.add(Bidirectional(LSTM(10, 
-                             activation='tanh',
-                             input_shape=(1,max_len),
-                             return_sequences=True)))
-model.add(Dropout(0.5))
-
-model.add(Bidirectional(LSTM(10, 
-                             activation='tanh',
-                             return_sequences=True)))
-model.add(Dropout(0.5))
-
-model.add(Bidirectional(LSTM(10, 
-                             activation='tanh')))
-model.add(Dropout(0.5))
-
+#model = Sequential()
+#model.add(Bidirectional(LSTM(10, 
+#                             activation='tanh',
+#                             input_shape=(1,max_len),
+#                             return_sequences=True)))
+#model.add(Dropout(0.5))
+#
+#model.add(Bidirectional(LSTM(10, 
+#                             activation='tanh',
+#                             return_sequences=True)))
+#model.add(Dropout(0.5))
+#
 #model.add(Bidirectional(LSTM(10, 
 #                             activation='tanh')))
-
+#model.add(Dropout(0.5))
 #
-model.add(layers.Dense(10, 
-                        activation='tanh'))
+##model.add(Bidirectional(LSTM(10, 
+##                             activation='tanh')))
+#
+##
+#model.add(layers.Dense(10, 
+#                        activation='tanh'))
+#model.add(layers.Dense(n_classes,activation='softmax'))
+    
+    
+# Original Bidi-LSTM 
+#model = Sequential()
+#model.add(Bidirectional(LSTM(10, 
+#                             activation='tanh',
+#                             input_shape=(1,max_len),
+#                             return_sequences=True)))
+#model.add(Dropout(0.5))
+#
+#model.add(Bidirectional(LSTM(10, 
+#                             activation='tanh',
+#                             return_sequences=True)))
+#model.add(Dropout(0.5))
+#
+#model.add(Bidirectional(LSTM(10, 
+#                             activation='tanh')))
+#model.add(Dropout(0.5))
+#
+#model.add(layers.Dense(10, 
+#                        activation='tanh'))
+
+
+# Attention Model
+
+input_1 = layers.Input((1,max_len))
+#LSTM 
+bidi_1 = Bidirectional(LSTM(10, 
+                             activation='tanh',
+                             input_shape=(1,max_len),
+                             return_sequences=True))(input_1)
+drop_1 = Dropout(0.5)(bidi_1)
+bidi_2 = Bidirectional(LSTM(10, 
+                             activation='tanh',
+                             return_sequences=True))(drop_1)
+drop_2 = Dropout(0.5)(bidi_2)
+bidi_3 = Bidirectional(LSTM(10, 
+                             activation='tanh'))(drop_2)
+drop_3 = Dropout(0.5)(bidi_3)
+dense_1 = layers.Dense(10, 
+                        activation='tanh')(drop_3)
+
+
+att = layers.Dense(10,input_dim=10)(dense_1)
+att = layers.Activation('softmax')(att)
+att = layers.RepeatVector(10)(att)
+att = layers.Permute((2,1))(att)
+
+dot_out = layers.Dot(axes=1)([dense_1, att])
+
+out = layers.Dense(n_classes,activation='softmax')(dot_out)
+
+model = tf.keras.models.Model(inputs=input_1,outputs=out)
+
+# Delete from up here if it doesn't work
 
 
 
-model.add(layers.Dense(n_classes,activation='softmax'))
+#model.add(layers.Dense(n_classes,activation='softmax'))
+
+
+
+
 
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',
@@ -180,7 +241,7 @@ history = model.fit(x_train_reshape, years_train,
 
 
 
-model.save('my_bidirectional_5.h5')
+model.save('my_bidirectional_6.h5')
 
 """
 my_bd : batch size 30, epochs 20, 
@@ -202,6 +263,9 @@ instead of the dense layer -> about 93/41
 add another LSTM and 2 dropouts, epochs down to 30 -> about 86/41, but increasing
 epochs back up to 120 -> back down to like 37 for some reason
 
-bidi_5 : bidi_4 but batch size = 10, also add dense layer 
+bidi_5 : bidi_4 but batch size = 10, also add dense layer -> about 
+
+bidi_6: bidi_5 but attempt to add attention ->
+
 """
 

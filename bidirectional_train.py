@@ -186,7 +186,7 @@ bidi_1 = Bidirectional(LSTM(10,
                              activation='tanh',
                              input_shape=(1,max_len)),
                         merge_mode = 'sum')(input_1)
-#drop_1 = Dropout(0.5)(bidi_1)
+drop_1 = Dropout(0.5)(bidi_1)
 #bidi_2 = Bidirectional(LSTM(10, 
 #                             activation='tanh'),
 #                        merge_mode = 'sum')(drop_1)
@@ -200,12 +200,12 @@ bidi_1 = Bidirectional(LSTM(10,
 #                        activation='tanh')(drop_1)
 
 
-att = layers.Dense(10,input_dim=10)(bidi_1)
+att = layers.Dense(10,input_dim=10)(drop_1)
 att = layers.Activation('softmax')(att)
 att = layers.RepeatVector(10)(att)
 att = layers.Permute((2,1))(att)
 
-dot_out = layers.Dot(axes=1)([bidi_1, att])
+dot_out = layers.Dot(axes=1)([drop_1, att])
 
 out = layers.Dense(n_classes,activation='softmax')(dot_out)
 
@@ -272,7 +272,8 @@ attempt 2: only has lstm , drop, dense -> high 80s / 34% nope this sucks
 attempt 3: only has lstm, merge mode = sum
 
 bidi_7: bidi_6 but added english stop words -> worse than before tbh 
-attempt 2: only lstm -> 
+attempt 2: only lstm -> still bad
+attempt 3: lstm -> dropout? 
 
 """
 

@@ -126,7 +126,7 @@ model = Sequential()
 model.add(Bidirectional(LSTM(10, 
                              activation='tanh',
                              input_shape=(1,max_len))))
-#model.add(Dropout(0.7))
+model.add(Dropout(0.5))
 #model.add(layers.Dense(10, 
 #                        activation='sigmoid'))
 #model.add(Dropout(0.5))
@@ -166,8 +166,9 @@ my_bidi_fixed_2 : batdch size 30, epochs 17
 max_features 10K, max-len 5800 
 add dropout & dense layers 
 
-my_bidi_3 : batch size 20, epochs 200
+my_bidi_3 : batch size 20, epochs 100
 removed embedding, just the LSTM, activation = 'tanh' (relu before)
 also using vectorizer instead of tokenizer 
+adding dropout 
 """
 

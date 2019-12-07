@@ -144,7 +144,8 @@ model.add(Bidirectional(LSTM(10,
 model.add(Dropout(0.5))
 
 model.add(Bidirectional(LSTM(10, 
-                             activation='tanh')))
+                             activation='tanh',
+                             return_sequences=True)))
 model.add(Dropout(0.5))
 
 model.add(Bidirectional(LSTM(10, 

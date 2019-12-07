@@ -189,23 +189,23 @@ bidi_1 = Bidirectional(LSTM(10,
 drop_1 = Dropout(0.5)(bidi_1)
 #bidi_2 = Bidirectional(LSTM(10, 
 #                             activation='tanh',
-#                             return_sequences=True))(bidi_1)
+#                             return_sequences=True))(drop_1)
 #drop_2 = Dropout(0.5)(bidi_2)
-
+#
 #dense_1 = Bidirectional(LSTM(10, 
 #                             activation='tanh'))(bidi_2)
 #drop_3 = Dropout(0.5)(bidi_3)
-
+#
 #dense_1 = layers.Dense(10, 
 #                        activation='tanh')(drop_1)
 
 
-att = layers.Dense(10,input_dim=10)(drop_1)
+att = layers.Dense(10,input_dim=10)(bidi_1)
 att = layers.Activation('softmax')(att)
 att = layers.RepeatVector(10)(att)
 att = layers.Permute((2,1))(att)
 
-dot_out = layers.Dot(axes=1)([drop_1, att])
+dot_out = layers.Dot(axes=1)([bidi_1, att])
 
 out = layers.Dense(n_classes,activation='softmax')(dot_out)
 

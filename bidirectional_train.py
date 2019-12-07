@@ -85,15 +85,15 @@ years_train_reshape = np.zeros((N_train, 1,n_classes))
 years_test_reshape = np.zeros((N_test, 1,n_classes))
 
 for i in range(N_train): 
-    cur_train_example = np.reshape(x_train[i][:], (max_len,1))
-    cur_train_label = np.reshape(years_train[i][:], (n_classes,1))
-    x_train_reshape[i][:][:] = cur_train_example.T
-    years_train_reshape[i][:][:] = cur_train_label.T
+    cur_train_example = x_train[i][:]
+    cur_train_label = years_train[i][:]
+    x_train_reshape[i][:][:] = cur_train_example
+    years_train_reshape[i][:][:] = cur_train_label
 for j in range(N_test):
-    cur_test_example = np.reshape(x_test[j][:], (max_len,1))
-    cur_test_label = np.reshape(years_test[j][:], (n_classes,1))
-    x_test_reshape[j][:][:] = cur_test_example.T
-    years_test_reshape[j][:][:] = cur_test_label.T
+    cur_test_example = x_test[j][:]
+    cur_test_label = years_test[j][:]
+    x_test_reshape[j][:][:] = cur_test_example
+    years_test_reshape[j][:][:] = cur_test_label
     
 
 # model.add(layers.Dense(10, input_dim=input_dim, activation='relu')) just for reference 
@@ -102,15 +102,12 @@ model = Sequential()
 #model.add(Embedding(max_features, 128, input_length=max_len))
 #model.add(Bidirectional(LSTM(10)))
 
-
 model.add(Bidirectional(LSTM(10, 
-                             activation='relu',
+                             activation='tanh',
                              input_shape=(1,max_len))))
-#model.add(Dropout(0.5))
+#model.add(Dropout(0.7))
 #model.add(layers.Dense(10, 
-#                        bias_regularizer=regularizers.l1(0.01),
-#                        kernel_regularizer=regularizers.l2(0.01),
-#                        activation='relu'))
+#                        activation='sigmoid'))
 #model.add(Dropout(0.5))
 
 model.add(layers.Dense(n_classes,activation='softmax'))
@@ -119,22 +116,23 @@ model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
+#model.summary()
 
-my_batch_size = 30
-n_epochs = 17
+my_batch_size = 20
+n_epochs = 200
 
 #history = model.fit(x_train, years_train, 
 #                    epochs=n_epochs,
 #                    verbose=True,
 #                    validation_data=(x_test, years_test),
 #                    batch_size=my_batch_size) 
-history = model.fit(x_train_reshape, years_train_reshape, 
+history = model.fit(x_train_reshape, years_train, 
                     epochs=n_epochs,
                     verbose=True,
-                    validation_data=(x_test_reshape, years_test_reshape),
+                    validation_data=(x_test_reshape, years_test),
                     batch_size = my_batch_size) 
 
-model.summary()
+
 
 model.save('my_bidirectional_3.h5')
 
@@ -147,7 +145,7 @@ my_bidi_fixed_2 : batdch size 30, epochs 17
 max_features 10K, max-len 5800 
 add dropout & dense layers 
 
-my_bidi_3 : batch size 30, epochs 17
-removed embedding, just the LSTM. 
+my_bidi_3 : batch size 20, epochs 200
+removed embedding, just the LSTM, activation = 'tanh' (relu before)
 """
 

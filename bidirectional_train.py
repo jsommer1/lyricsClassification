@@ -243,7 +243,7 @@ history = model.fit(x_train_reshape, years_train,
 
 
 
-model.save('my_bidirectional_6.h5')
+model.save('my_bidirectional_7.h5')
 
 """
 my_bd : batch size 30, epochs 20, 
@@ -269,6 +269,6 @@ bidi_5 : bidi_4 but batch size = 10, also add dense layer -> about
 
 bidi_6: bidi_5 but attempt to add attention -> nah it sucked
 attempt 2: only has lstm , drop, dense -> high 80s / 34% nope this sucks 
-attempt 3: only has lstm, merge mode = sum 
+attempt 3: only has lstm, merge mode = sum -> 
 """
 

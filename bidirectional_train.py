@@ -205,7 +205,7 @@ att = layers.Activation('softmax')(att)
 att = layers.RepeatVector(10)(att)
 att = layers.Permute((2,1))(att)
 
-dot_out = layers.Dot(axes=1)([dense_1, att])
+dot_out = layers.Dot(axes=1)([drop_1, att])
 
 out = layers.Dense(n_classes,activation='softmax')(dot_out)
 

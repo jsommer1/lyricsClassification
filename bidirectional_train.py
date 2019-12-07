@@ -263,7 +263,7 @@ adding dropout -> tr/test acc about 97-98/39-40
 add dense layer and dropout -> test acc about 40-41 
 
 my_bidi_4: epochs 130, batch size 20, add another LSTM layer to model 3 
-instead of the dense layer
+instead of the dense layer, no attention 
 
 bidi_5 : bidi_4 but batch size = 10, also add dense layer -> about 
 

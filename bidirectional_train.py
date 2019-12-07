@@ -59,7 +59,7 @@ max_features = 10000
 max_len = 1200
 
 # Vectorizer  
-vectorizer = CountVectorizer(stop_words='english')
+vectorizer = CountVectorizer()
 vectorizer.fit(lyrics_train)
 X_train = vectorizer.transform(lyrics_train)
 X_test = vectorizer.transform(lyrics_test)
@@ -195,19 +195,20 @@ bidi_2 = Bidirectional(LSTM(10,
 drop_2 = Dropout(0.5)(bidi_2)
 
 bidi_3 = Bidirectional(LSTM(10, 
-                             activation='tanh'))(drop_2)
+                             activation='tanh'),
+                        merge_mode = 'sum')(drop_2)
 drop_3 = Dropout(0.5)(bidi_3)
 
-dense_1 = layers.Dense(10, 
-                        activation='tanh')(drop_3)
+#dense_1 = layers.Dense(10, 
+#                        activation='tanh')(drop_3)
 
 
-att = layers.Dense(10,input_dim=10)(dense_1)
+att = layers.Dense(10,input_dim=10)(drop_3)
 att = layers.Activation('softmax')(att)
 att = layers.RepeatVector(10)(att)
 att = layers.Permute((2,1))(att)
 
-dot_out = layers.Dot(axes=1)([dense_1, att])
+dot_out = layers.Dot(axes=1)([drop_3, att])
 
 out = layers.Dense(n_classes,activation='softmax')(dot_out)
 
@@ -230,7 +231,7 @@ model.compile(loss='categorical_crossentropy',
 #model.summary()
 
 my_batch_size = 10
-n_epochs = 120
+n_epochs = 100
 
 #history = model.fit(x_train, years_train, 
 #                    epochs=n_epochs,
@@ -277,5 +278,6 @@ bidi_7: bidi_6 but added english stop words -> worse than before tbh
 attempt 2: only lstm -> still bad
 attempt 3: lstm -> dropout? v bad 
 attempt 4: try full model again w/ stop words 
+attempt 5: kept stop words in (sequential cues!) , removed dense, epochs to 100  
 """
 

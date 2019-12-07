@@ -189,28 +189,27 @@ bidi_1 = Bidirectional(LSTM(10,
                         merge_mode = 'sum')(input_1)
 drop_1 = Dropout(0.5)(bidi_1)
 bidi_2 = Bidirectional(LSTM(10, 
-                             activation='tanh',
-                             return_sequences=True),
+                             activation='tanh'),
                         merge_mode = 'sum')(drop_1)
 drop_2 = Dropout(0.5)(bidi_2)
 
-bidi_3 = Bidirectional(LSTM(10, 
-                             activation='tanh'),
-                        merge_mode = 'sum')(drop_2)
-drop_3 = Dropout(0.5)(bidi_3)
+#bidi_3 = Bidirectional(LSTM(10, 
+#                             activation='tanh'),
+#                        merge_mode = 'sum')(drop_2)
+#drop_3 = Dropout(0.5)(bidi_3)
 
 #dense_1 = layers.Dense(10, 
 #                        activation='tanh')(drop_3)
 
 
-att = layers.Dense(10,input_dim=10)(drop_3)
+att = layers.Dense(10,input_dim=10)(drop_2)
 att = layers.Activation('softmax')(att)
 att = layers.RepeatVector(10)(att)
 att = layers.Permute((2,1))(att)
 
-dot_out = layers.Dot(axes=1)([drop_3, att])
+dot_out = layers.Dot(axes=1)([drop_2, att])
 
-out = layers.Dense(n_classes,activation='softmax')(drop_3)
+out = layers.Dense(n_classes,activation='softmax')(drop_2)
 
 model = tf.keras.models.Model(inputs=input_1,outputs=out)
 
@@ -230,8 +229,8 @@ model.compile(loss='categorical_crossentropy',
 
 #model.summary()
 
-my_batch_size = 10
-n_epochs = 100
+my_batch_size = 20
+n_epochs = 130
 
 #history = model.fit(x_train, years_train, 
 #                    epochs=n_epochs,
@@ -246,7 +245,7 @@ history = model.fit(x_train_reshape, years_train,
 
 
 
-model.save('my_bidirectional_8.h5')
+model.save('my_bidirectional_4.h5')
 
 """
 my_bd : batch size 30, epochs 20, 
@@ -263,10 +262,8 @@ also using vectorizer instead of tokenizer
 adding dropout -> tr/test acc about 97-98/39-40 
 add dense layer and dropout -> test acc about 40-41 
 
-my_bidi_4: epochs 100, batch size 20, add another LSTM layer to model 3 
-instead of the dense layer -> about 93/41 
-add another LSTM and 2 dropouts, epochs down to 30 -> about 86/41, but increasing
-epochs back up to 120 -> back down to like 37 for some reason
+my_bidi_4: epochs 130, batch size 20, add another LSTM layer to model 3 
+instead of the dense layer
 
 bidi_5 : bidi_4 but batch size = 10, also add dense layer -> about 
 

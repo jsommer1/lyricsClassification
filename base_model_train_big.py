@@ -102,23 +102,6 @@ input_dim = X_train.shape[1]
 
 model = Sequential()
 model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
-
-# Model type 2
-#model.add(Dropout(0.5))
-#model.add(layers.Dense(10, 
-#                        bias_regularizer=regularizers.l1(0.01),
-#                        kernel_regularizer=regularizers.l2(0.01),
-#                        activation='relu'))
-#model.add(Dropout(0.5))
-## 
-##Model type 3
-#model.add(layers.Dense(10, 
-#                        bias_regularizer=regularizers.l1(0.01),
-#                        kernel_regularizer=regularizers.l2(0.01),
-#                        activation='relu'))
-#model.add(Dropout(0.5))
-#
-
 model.add(layers.Dense(n_classes,activation='softmax'))
 
 model.compile(loss='categorical_crossentropy',

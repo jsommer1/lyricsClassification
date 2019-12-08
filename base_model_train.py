@@ -37,7 +37,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # you can run this command in a separate terminal tab in JupyterLab to monitor and sanity check whether your training is actually using GPU:
 # $ watch -n 1 nvidia-smi 
 
-df = pd.read_csv('dataset_clean.csv')   
+df = pd.read_csv('dataset_clean_bow.csv')   
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
@@ -61,9 +61,6 @@ input_dim = X_train.shape[1]
 
 model = Sequential()
 model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
-#model.add(Dropout(0.8)) ## 
-
-
 model.add(layers.Dense(n_classes,activation='softmax'))
 
 model.compile(loss='categorical_crossentropy',
@@ -82,7 +79,7 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
-model.save('base_model_small_set.h5')
+model.save('base_model_big_set.h5')
 
 """
 Model 1: batch size 10, 75 epochs  (run on BOW dataset) 

@@ -39,30 +39,68 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # $ watch -n 1 nvidia-smi 
 
 
-# choose dataset 
-df = pd.read_csv('dataset_clean.csv')   
+df = pd.read_csv('dataset_clean_bow.csv')  # TODO: ADD FILE NAME HERE 
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
 
 lyrics_train, lyrics_test, y_train, y_test = train_test_split(lyrics, years, test_size = 0.3, random_state = 1000)
 
+from sklearn.utils import resample 
 
-vectorizer = CountVectorizer(stop_words='english')
-vectorizer.fit(lyrics_train)
+print('\n\nResampling data to even distributions...')
 
-X_train = vectorizer.transform(lyrics_train)
+# recombine for downsampling
+tr_len = lyrics_train.shape[0]
+lyr_tr = lyrics_train.reshape((tr_len,1))
+y_tr = y_train.reshape((tr_len,1))
+tr_set = np.concatenate([lyr_tr,y_tr],axis=1)
+# tr_set[tr_set[:,1] == 0]   <-- like this 
+
+# separate into classes
+class_0 = tr_set[tr_set[:,1]==0]
+class_1 = tr_set[tr_set[:,1]==1]
+class_2 = tr_set[tr_set[:,1]==2]
+class_3 = tr_set[tr_set[:,1]==3]
+class_4 = tr_set[tr_set[:,1]==4]
+class_5 = tr_set[tr_set[:,1]==5]
+
+n_class_5 = class_5.shape[0]
+
+# Downsample classes 0 thru 4 to # samples in class 5
+n_samp = 5000
+class_0_RS = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
+class_1_RS = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
+class_2_RS = resample(class_2, replace=True, n_samples=n_samp, random_state = 27)
+class_3_RS = resample(class_3, replace=True, n_samples=n_samp, random_state = 27)
+class_4_RS = resample(class_4, replace=True, n_samples=n_samp, random_state = 27)
+
+## Upsample class 0,1,5 to 10K samples 
+#class_1_RS = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
+#class_0_US = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
+class_5_RS = resample(class_5, replace=True, n_samples=n_samp, random_state = 27)
+
+# Recombine resampled datasets 
+tr_set_resamp = np.concatenate([class_0_RS, class_1_RS, class_2_RS, class_3_RS, class_4_RS, class_5_RS],axis=0)
+
+lyrics_train_resamp = tr_set_resamp[:,0]
+y_train_resamp = tr_set_resamp[:,1]
+
+print('\nData done resampling\n\n')
+
+vectorizer = CountVectorizer()
+vectorizer.fit(lyrics_train_resamp)
+
+X_train = vectorizer.transform(lyrics_train_resamp)
 X_test = vectorizer.transform(lyrics_test)
 
 # number of classes is 6 if grouping by decade, 11 if grouping by 5 years
 n_classes = 6
 
-years_train = tf.keras.utils.to_categorical(y_train,num_classes=n_classes)
+years_train = tf.keras.utils.to_categorical(y_train_resamp,num_classes=n_classes)
 years_test = tf.keras.utils.to_categorical(y_test,num_classes=n_classes)
 
 input_dim = X_train.shape[1]
-
-# Set up model 
 
 model = Sequential()
 model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
@@ -75,7 +113,7 @@ model.summary()
 
 
 # Load weights from saved models 
-model.load_weights('my_bidirectional.h5')                   ## CHOOSE MODEL TO EVALUATE HERE
+model.load_weights('base_model_resampled_data.h5')            ## CHOOSE MODEL TO EVALUATE HERE
 
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',
@@ -83,9 +121,9 @@ model.compile(loss='categorical_crossentropy',
 
 # Evaluate Model
 print('\nEvaluating Training Accuracy...')
-loss_train, accuracy_train = model.evaluate(x_train, years_train, verbose=False)
+loss_train, accuracy_train = model.evaluate(X_train, years_train, verbose=False)
 print('\nEvaluating Testing Accuracy...\n')
-loss_test, accuracy_test = model.evaluate(x_test, years_test, verbose=False)
+loss_test, accuracy_test = model.evaluate(X_test, years_test, verbose=False)
 print("Training Accuracy: {:.4f}".format(accuracy_train)) # Prev 0.9941
 print("Testing Accuracy:  {:.4f}\n".format(accuracy_test)) # prev 0.3777
 
@@ -93,7 +131,7 @@ print("Testing Accuracy:  {:.4f}\n".format(accuracy_test)) # prev 0.3777
 from sklearn.metrics import confusion_matrix
 
 print('Making predictions...')
-years_pred = model.predict(x_test)
+years_pred = model.predict(X_test)
 print('Generating Confusion Matrix...')
 confus_mat = confusion_matrix(np.argmax(years_test,axis=1), np.argmax(years_pred,axis=1))
 print('Confusion Matrix: \n{}'.format(confus_mat))

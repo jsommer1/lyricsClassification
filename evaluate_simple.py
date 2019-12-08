@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Trains the base model (just some Dense layers). 
+For evaluating base model performance
 """
 
 
@@ -34,10 +34,13 @@ import os
 # when training on AWS p2.xlarge, this command will ensure that you're training with the GPU: 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-# you can run this command in a separate terminal tab in JupyterLab to monitor and sanity check whether your training is actually using GPU:
+# you can run this command in a separate terminal tab in JupyterLab to 
+#monitor and sanity check whether your training is actually using GPU:
 # $ watch -n 1 nvidia-smi 
 
-df = pd.read_csv('dataset_clean_bow.csv')   
+
+# choose dataset 
+df = pd.read_csv('dataset_clean.csv')   
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
@@ -45,7 +48,7 @@ years = df['Year'].values
 lyrics_train, lyrics_test, y_train, y_test = train_test_split(lyrics, years, test_size = 0.3, random_state = 1000)
 
 
-vectorizer = CountVectorizer()
+vectorizer = CountVectorizer(stop_words='english')
 vectorizer.fit(lyrics_train)
 
 X_train = vectorizer.transform(lyrics_train)
@@ -59,11 +62,10 @@ years_test = tf.keras.utils.to_categorical(y_test,num_classes=n_classes)
 
 input_dim = X_train.shape[1]
 
+# Set up model 
+
 model = Sequential()
 model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
-#model.add(Dropout(0.8)) ## 
-
-
 model.add(layers.Dense(n_classes,activation='softmax'))
 
 model.compile(loss='categorical_crossentropy',
@@ -72,27 +74,27 @@ model.compile(loss='categorical_crossentropy',
 model.summary()
 
 
+# Load weights from saved models 
+model.load_weights('my_bidirectional.h5')                   ## CHOOSE MODEL TO EVALUATE HERE
 
-my_batch_size = 10
-n_epochs = 75
+model.compile(loss='categorical_crossentropy',
+              optimizer='adam',
+              metrics=['accuracy'])
 
-history = model.fit(X_train, years_train, 
-                    epochs=n_epochs,
-                    verbose=True,
-                    validation_data=(X_test, years_test),
-                    batch_size=my_batch_size)
+# Evaluate Model
+print('\nEvaluating Training Accuracy...')
+loss_train, accuracy_train = model.evaluate(x_train, years_train, verbose=False)
+print('\nEvaluating Testing Accuracy...\n')
+loss_test, accuracy_test = model.evaluate(x_test, years_test, verbose=False)
+print("Training Accuracy: {:.4f}".format(accuracy_train)) # Prev 0.9941
+print("Testing Accuracy:  {:.4f}\n".format(accuracy_test)) # prev 0.3777
 
-model.save('base_model_big_set.h5')
+# Get confusion matrix 
+from sklearn.metrics import confusion_matrix
 
-"""
-Model 1: batch size 10, 75 epochs  (run on BOW dataset) 
-    -> really skewed distribution! prob will be "accurate", but confusion matrix will prob show lots of classifications as 4 
-
-Model 2: batch size 10, 20 epochs (stop before overfitting), run on small dataset
-
-Model 3: batch size 10, 100 epochs, add dropout only, run on big set
-
-MOdel 4: batch 10, 75 epochs, stop words, 
-
-"""
+print('Making predictions...')
+years_pred = model.predict(x_test)
+print('Generating Confusion Matrix...')
+confus_mat = confusion_matrix(np.argmax(years_test,axis=1), np.argmax(years_pred,axis=1))
+print('Confusion Matrix: \n{}'.format(confus_mat))
 

@@ -148,8 +148,7 @@ bidi_5 = Bidirectional(LSTM(10,
                         merge_mode = 'sum')(drop_4)
 drop_5 = Dropout(0.5)(bidi_5)
 bidi_6 = Bidirectional(LSTM(10, 
-                             activation='tanh',
-                             return_sequences=True),
+                             activation='tanh'),
                         merge_mode = 'sum')(drop_5)
 
 

@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Dec  4 18:44:02 2019
+CS 230: Deep Learning
 
-@author: Joe1
+Joe Sommer 12/8/2019 
+
+This script is for training a multi-layered bidirectional LSTM model to 
+classify a song's release year from its lyrics. 
+
+Reads in a pre-processed dataset of Billboard's Hot 100s' song lyrics 
+and corresponding release years. Saves the model at the end to be loaded into 
+a separate script for evaluating the model's performance. 
 """
 
 
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-#import matplotlib.pyplot as plt
-#plt.style.use('ggplot')
+import numpy as np
+import pandas as pd 
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import RandomizedSearchCV
 
 import tensorflow as tf
 
@@ -31,17 +32,12 @@ from tensorflow.keras import regularizers
 from tensorflow.keras.layers import LSTM, Dense, TimeDistributed, Bidirectional, Dropout, Embedding
 
 import os
-# print(os.listdir("../CS230_Project"))
 
-# when training on AWS p2.xlarge, this command will ensure that you're training with the GPU: 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
-# you can run this command in a separate terminal tab in JupyterLab to monitor and sanity check whether your training is actually using GPU:
-# $ watch -n 1 nvidia-smi 
 
 
 # Import data
-df = pd.read_csv('dataset_clean.csv')
+df = pd.read_csv('dataset_billboard.csv')
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
@@ -49,8 +45,7 @@ years = df['Year'].values
 lyrics_train, lyrics_test, y_train, y_test = train_test_split(lyrics, years, test_size = 0.3, random_state = 1000)
 
 
-
-n_classes=6
+n_classes=6 # 6 different decades 
 
 years_train = tf.keras.utils.to_categorical(y_train,num_classes=n_classes)
 years_test = tf.keras.utils.to_categorical(y_test,num_classes=n_classes)
@@ -68,11 +63,9 @@ x_test = X_test
 max_len = X_train.shape[1]
 
 
-
 # reshape inputs to feed to LSTM
 N_train = x_train.shape[0]
 N_test = x_test.shape[0]
-
 
 
 x_train_reshape = np.zeros((N_train, 1,max_len))
@@ -94,31 +87,11 @@ for j in range(N_test):
     
     
     
-# Original Bidi-LSTM 
-#model = Sequential()
-#model.add(Bidirectional(LSTM(10, 
-#                             activation='tanh',
-#                             input_shape=(1,max_len),
-#                             return_sequences=True)))
-#model.add(Dropout(0.5))
-#
-#model.add(Bidirectional(LSTM(10, 
-#                             activation='tanh',
-#                             return_sequences=True)))
-#model.add(Dropout(0.5))
-#
-#model.add(Bidirectional(LSTM(10, 
-#                             activation='tanh')))
-#model.add(Dropout(0.5))
-#
-#model.add(layers.Dense(10, 
-#                        activation='tanh'))
-
-
-# Attention Model
 
 input_1 = layers.Input((1,max_len))
-#LSTM 
+
+
+# Adjust layers of Bidirectional model here 
 bidi_1 = Bidirectional(LSTM(10, 
                              activation='tanh',
                              input_shape=(1,max_len),
@@ -132,63 +105,24 @@ bidi_2 = Bidirectional(LSTM(10,
 drop_2 = Dropout(0.5)(bidi_2)
 
 bidi_3 = Bidirectional(LSTM(10, 
-                             activation='tanh',
-                             return_sequences=True),
-                        merge_mode = 'sum')(drop_2)
-drop_3 = Dropout(0.5)(bidi_3)
-
-bidi_4 = Bidirectional(LSTM(10, 
-                             activation='tanh',
-                             return_sequences=True),
-                        merge_mode = 'sum')(drop_3)
-drop_4 = Dropout(0.5)(bidi_4)
-bidi_5 = Bidirectional(LSTM(10, 
-                             activation='tanh',
-                             return_sequences=True),
-                        merge_mode = 'sum')(drop_4)
-drop_5 = Dropout(0.5)(bidi_5)
-bidi_6 = Bidirectional(LSTM(10, 
                              activation='tanh'),
-                        merge_mode = 'sum')(drop_5)
+                        merge_mode = 'sum')(drop_2)
+   
+out = layers.Dense(n_classes,activation='softmax')(bidi_3)
 
-
-
-
-#att = layers.Dense(10,input_dim=10)(drop_2)
-#att = layers.Activation('softmax')(att)
-#att = layers.RepeatVector(10)(att)
-#att = layers.Permute((2,1))(att)
-#
-#dot_out = layers.Dot(axes=1)([drop_2, att])
-
-out = layers.Dense(n_classes,activation='softmax')(bidi_6)
 
 model = tf.keras.models.Model(inputs=input_1,outputs=out)
-
-# Delete from up here if it doesn't work
-
-
-
-#model.add(layers.Dense(n_classes,activation='softmax'))
-
-
-
 
 
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-#model.summary()
 
 my_batch_size = 20
-n_epochs = 300
+n_epochs = 130
 
-#history = model.fit(x_train, years_train, 
-#                    epochs=n_epochs,
-#                    verbose=True,
-#                    validation_data=(x_test, years_test),
-#                    batch_size=my_batch_size) 
+
 history = model.fit(x_train_reshape, years_train, 
                     epochs=n_epochs,
                     verbose=True,
@@ -197,40 +131,6 @@ history = model.fit(x_train_reshape, years_train,
 
 
 
-model.save('bidirectional_6_stack.h5')
+model.save('bidirectional_3_stack.h5')
 
-"""
-my_bd : batch size 30, epochs 20, 
-max_features = 10000
-max_len = 5800 
-
-my_bidi_fixed_2 : batdch size 30, epochs 17
-max_features 10K, max-len 5800 
-add dropout & dense layers 
-
-my_bidi_3 : batch size 20, epochs 100
-removed embedding, just the LSTM, activation = 'tanh' (relu before)
-also using vectorizer instead of tokenizer 
-adding dropout -> tr/test acc about 97-98/39-40 
-add dense layer and dropout -> test acc about 40-41 
-
-my_bidi_4: epochs 130, batch size 20, add another LSTM layer to model 3 
-instead of the dense layer, no attention 
-
-bidi_5 : bidi_4 but batch size = 10, also add dense layer -> about 
-
-bidi_6: bidi_5 but attempt to add attention -> nah it sucked
-attempt 2: only has lstm , drop, dense -> high 80s / 34% nope this sucks 
-attempt 3: only has lstm, merge mode = sum
-final: batch 20, epocsh 130 
-
-
-bidi_7: bidi_6 but added english stop words -> worse than before tbh 
-attempt 2: only lstm -> still bad
-attempt 3: lstm -> dropout? v bad 
-attempt 4: try full model again w/ stop words 
-attempt 5: kept stop words in (sequential cues!) , removed dense, epochs to 100  
-
-bidi_8: bidi 7 but w/o attention 
-"""
 

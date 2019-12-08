@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Trains the base model (just some Dense layers). 
+CS 230: Deep Learning
+
+Joe Sommer 12/8/2019 
+
+This script is for training a simple, single-layer model to 
+classify a song's release year from its lyrics. 
+
+Reads in a pre-processed dataset of song lyrics 
+and corresponding release years from either Billboard's Hot 100s or the
+Million Song Dataset. Saves the model at the end to be loaded into 
+a separate script for evaluating the model's performance. 
 """
 
 
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import numpy as np 
+import pandas as pd 
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import RandomizedSearchCV
 
 import tensorflow as tf
 
@@ -29,15 +35,11 @@ from tensorflow.keras import regularizers
 from tensorflow.keras.layers import LSTM, Dense, TimeDistributed, Bidirectional, Dropout, Embedding
 
 import os
-# print(os.listdir("../CS230_Project"))
 
-# when training on AWS p2.xlarge, this command will ensure that you're training with the GPU: 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-# you can run this command in a separate terminal tab in JupyterLab to monitor and sanity check whether your training is actually using GPU:
-# $ watch -n 1 nvidia-smi 
-
-df = pd.read_csv('dataset_clean.csv')   
+# Read in preprocessed dataset 
+df = pd.read_csv('dataset_billboard.csv')   
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
@@ -51,7 +53,6 @@ vectorizer.fit(lyrics_train)
 X_train = vectorizer.transform(lyrics_train)
 X_test = vectorizer.transform(lyrics_test)
 
-# number of classes is 6 if grouping by decade, 11 if grouping by 5 years
 n_classes = 6
 
 years_train = tf.keras.utils.to_categorical(y_train,num_classes=n_classes)
@@ -69,7 +70,6 @@ model.compile(loss='categorical_crossentropy',
 model.summary()
 
 
-
 my_batch_size = 10
 n_epochs = 75
 
@@ -79,17 +79,6 @@ history = model.fit(X_train, years_train,
                     validation_data=(X_test, years_test),
                     batch_size=my_batch_size)
 
+# Change name depending on which dataset is being trained on 
 model.save('base_model_small_set.h5')
-
-"""
-Model 1: batch size 10, 75 epochs  (run on BOW dataset) 
-    -> really skewed distribution! prob will be "accurate", but confusion matrix will prob show lots of classifications as 4 
-
-Model 2: batch size 10, 20 epochs (stop before overfitting), run on small dataset
-
-Model 3: batch size 10, 100 epochs, add dropout only, run on big set
-
-MOdel 4: batch 10, 75 epochs, stop words, 
-
-"""
 

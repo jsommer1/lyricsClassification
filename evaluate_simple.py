@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-For evaluating base model performance
+CS 230: Deep Learning
+
+Joe Sommer 12/8/2019 
+
+This script is for evaluating a pre-trained single-layer 
+model that classifies a song's release year from its lyrics. 
+
+It sets up an untrained model, reads in the pre-trained model's weights, then 
+evaluates its performance. It also displays a confusion matrix showing the 
+results on a test set. 
 """
 
 
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import numpy as np 
+import pandas as pd 
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import RandomizedSearchCV
 
 import tensorflow as tf
 
@@ -28,18 +33,9 @@ from tensorflow.keras.preprocessing import text, sequence
 from tensorflow.keras import regularizers
 from tensorflow.keras.layers import LSTM, Dense, TimeDistributed, Bidirectional, Dropout, Embedding
 
-import os
-# print(os.listdir("../CS230_Project"))
 
-# when training on AWS p2.xlarge, this command will ensure that you're training with the GPU: 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
-# you can run this command in a separate terminal tab in JupyterLab to 
-#monitor and sanity check whether your training is actually using GPU:
-# $ watch -n 1 nvidia-smi 
-
-
-df = pd.read_csv('dataset_clean_bow.csv')   
+# Read in preprocessed dataset 
+df = pd.read_csv('dataset_billboard.csv')   
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
@@ -53,7 +49,6 @@ vectorizer.fit(lyrics_train)
 X_train = vectorizer.transform(lyrics_train)
 X_test = vectorizer.transform(lyrics_test)
 
-# number of classes is 6 if grouping by decade, 11 if grouping by 5 years
 n_classes = 6
 
 years_train = tf.keras.utils.to_categorical(y_train,num_classes=n_classes)
@@ -83,8 +78,8 @@ print('\nEvaluating Training Accuracy...')
 loss_train, accuracy_train = model.evaluate(X_train, years_train, verbose=False)
 print('\nEvaluating Testing Accuracy...\n')
 loss_test, accuracy_test = model.evaluate(X_test, years_test, verbose=False)
-print("Training Accuracy: {:.4f}".format(accuracy_train)) # Prev 0.9941
-print("Testing Accuracy:  {:.4f}\n".format(accuracy_test)) # prev 0.3777
+print("Training Accuracy: {:.4f}".format(accuracy_train)) 
+print("Testing Accuracy:  {:.4f}\n".format(accuracy_test)) 
 
 # Get confusion matrix 
 from sklearn.metrics import confusion_matrix
@@ -92,6 +87,7 @@ from sklearn.metrics import confusion_matrix
 print('Making predictions...')
 years_pred = model.predict(X_test)
 print('Generating Confusion Matrix...')
+print('NOTE: rows: actual class, cols: predicted class')
 confus_mat = confusion_matrix(np.argmax(years_test,axis=1), np.argmax(years_pred,axis=1))
 print('Confusion Matrix: \n{}'.format(confus_mat))
 

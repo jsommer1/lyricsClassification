@@ -270,6 +270,8 @@ bidi_5 : bidi_4 but batch size = 10, also add dense layer -> about
 bidi_6: bidi_5 but attempt to add attention -> nah it sucked
 attempt 2: only has lstm , drop, dense -> high 80s / 34% nope this sucks 
 attempt 3: only has lstm, merge mode = sum
+final: batch 20, epocsh 130 
+
 
 bidi_7: bidi_6 but added english stop words -> worse than before tbh 
 attempt 2: only lstm -> still bad

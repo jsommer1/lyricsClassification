@@ -39,7 +39,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # $ watch -n 1 nvidia-smi 
 
 
-df = pd.read_csv('dataset_clean.csv')   
+df = pd.read_csv('dataset_clean_bow.csv')   
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
@@ -72,7 +72,7 @@ model.summary()
 
 
 # Load weights from saved models 
-model.load_weights('base_model_small_set.h5')            ## CHOOSE MODEL TO EVALUATE HERE
+model.load_weights('base_model_big_set.h5')            ## CHOOSE MODEL TO EVALUATE HERE
 
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',

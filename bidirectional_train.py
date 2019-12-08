@@ -55,7 +55,6 @@ n_classes=6
 years_train = tf.keras.utils.to_categorical(y_train,num_classes=n_classes)
 years_test = tf.keras.utils.to_categorical(y_test,num_classes=n_classes)
 
-max_features = 10000
 max_len = 1200
 
 # Vectorizer  
@@ -68,34 +67,11 @@ x_train = X_train
 x_test = X_test
 max_len = X_train.shape[1]
 
-# tokenizer 
-#tok = text.Tokenizer(num_words=max_features, lower=False)
-#tok.fit_on_texts(list(lyrics_train)+list(lyrics_test))
-#X_train = tok.texts_to_sequences(lyrics_train)
-#X_test = tok.texts_to_sequences(lyrics_test)
-
-
-# Pad data 
-#x_train = sequence.pad_sequences(X_train,maxlen= max_len)
-#x_test = sequence.pad_sequences(X_test, maxlen = max_len)
 
 
 # reshape inputs to feed to LSTM
 N_train = x_train.shape[0]
 N_test = x_test.shape[0]
-
-
-## TODO: DELETE
-#m = 0
-#for i in range(N_train):
-#    l = len(X_train[i])
-#    if l > m:
-#        m = l
-#for i in range(N_test):
-#    l = len(X_test[i])
-#    if l > m:
-#        m = l
-#print('max len : {}'.format(m))
 
 
 
@@ -116,45 +92,6 @@ for j in range(N_test):
     x_test_reshape[j][:][:] = cur_test_example
     years_test_reshape[j][:][:] = cur_test_label
     
-
-# model.add(layers.Dense(10, input_dim=input_dim, activation='relu')) just for reference 
-
-#model = Sequential()
-#model.add(Embedding(max_features, 128, input_length=max_len))
-#model.add(Bidirectional(LSTM(10)))
-
-#model.add(Bidirectional(LSTM(10, 
-#                             activation='tanh',
-#                             input_shape=(1,max_len))))
-#model.add(Dropout(0.5))
-#
-#model.add(layers.Dense(10, 
-#                        activation='tanh'))
-#model.add(Dropout(0.5))
-
-#model = Sequential()
-#model.add(Bidirectional(LSTM(10, 
-#                             activation='tanh',
-#                             input_shape=(1,max_len),
-#                             return_sequences=True)))
-#model.add(Dropout(0.5))
-#
-#model.add(Bidirectional(LSTM(10, 
-#                             activation='tanh',
-#                             return_sequences=True)))
-#model.add(Dropout(0.5))
-#
-#model.add(Bidirectional(LSTM(10, 
-#                             activation='tanh')))
-#model.add(Dropout(0.5))
-#
-##model.add(Bidirectional(LSTM(10, 
-##                             activation='tanh')))
-#
-##
-#model.add(layers.Dense(10, 
-#                        activation='tanh'))
-#model.add(layers.Dense(n_classes,activation='softmax'))
     
     
 # Original Bidi-LSTM 
@@ -189,27 +126,43 @@ bidi_1 = Bidirectional(LSTM(10,
                         merge_mode = 'sum')(input_1)
 drop_1 = Dropout(0.5)(bidi_1)
 bidi_2 = Bidirectional(LSTM(10, 
-                             activation='tanh'),
+                             activation='tanh',
+                             return_sequences=True),
                         merge_mode = 'sum')(drop_1)
 drop_2 = Dropout(0.5)(bidi_2)
 
-#bidi_3 = Bidirectional(LSTM(10, 
-#                             activation='tanh'),
-#                        merge_mode = 'sum')(drop_2)
-#drop_3 = Dropout(0.5)(bidi_3)
+bidi_3 = Bidirectional(LSTM(10, 
+                             activation='tanh',
+                             return_sequences=True),
+                        merge_mode = 'sum')(drop_2)
+drop_3 = Dropout(0.5)(bidi_3)
 
-#dense_1 = layers.Dense(10, 
-#                        activation='tanh')(drop_3)
+bidi_4 = Bidirectional(LSTM(10, 
+                             activation='tanh',
+                             return_sequences=True),
+                        merge_mode = 'sum')(drop_3)
+drop_4 = Dropout(0.5)(bidi_4)
+bidi_5 = Bidirectional(LSTM(10, 
+                             activation='tanh',
+                             return_sequences=True),
+                        merge_mode = 'sum')(drop_4)
+drop_5 = Dropout(0.5)(bidi_5)
+bidi_6 = Bidirectional(LSTM(10, 
+                             activation='tanh',
+                             return_sequences=True),
+                        merge_mode = 'sum')(drop_5)
 
 
-att = layers.Dense(10,input_dim=10)(drop_2)
-att = layers.Activation('softmax')(att)
-att = layers.RepeatVector(10)(att)
-att = layers.Permute((2,1))(att)
 
-dot_out = layers.Dot(axes=1)([drop_2, att])
 
-out = layers.Dense(n_classes,activation='softmax')(dot_out)
+#att = layers.Dense(10,input_dim=10)(drop_2)
+#att = layers.Activation('softmax')(att)
+#att = layers.RepeatVector(10)(att)
+#att = layers.Permute((2,1))(att)
+#
+#dot_out = layers.Dot(axes=1)([drop_2, att])
+
+out = layers.Dense(n_classes,activation='softmax')(bidi_6)
 
 model = tf.keras.models.Model(inputs=input_1,outputs=out)
 
@@ -230,7 +183,7 @@ model.compile(loss='categorical_crossentropy',
 #model.summary()
 
 my_batch_size = 20
-n_epochs = 130
+n_epochs = 300
 
 #history = model.fit(x_train, years_train, 
 #                    epochs=n_epochs,
@@ -245,7 +198,7 @@ history = model.fit(x_train_reshape, years_train,
 
 
 
-model.save('my_bidirectional_6.h5')
+model.save('bidirectional_6_stack.h5')
 
 """
 my_bd : batch size 30, epochs 20, 

@@ -209,7 +209,7 @@ att = layers.Permute((2,1))(att)
 
 dot_out = layers.Dot(axes=1)([drop_2, att])
 
-out = layers.Dense(n_classes,activation='softmax')(drop_2)
+out = layers.Dense(n_classes,activation='softmax')(dot_out)
 
 model = tf.keras.models.Model(inputs=input_1,outputs=out)
 
@@ -245,7 +245,7 @@ history = model.fit(x_train_reshape, years_train,
 
 
 
-model.save('my_bidirectional_4.h5')
+model.save('my_bidirectional_6.h5')
 
 """
 my_bd : batch size 30, epochs 20, 

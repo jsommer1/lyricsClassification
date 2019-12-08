@@ -104,7 +104,7 @@ model = Sequential()
 model.add(layers.Dense(10, input_dim=input_dim, activation='relu'))
 
 # Model type 2
-model.add(Dropout(0.5))
+#model.add(Dropout(0.5))
 #model.add(layers.Dense(10, 
 #                        bias_regularizer=regularizers.l1(0.01),
 #                        kernel_regularizer=regularizers.l2(0.01),

@@ -66,27 +66,27 @@ class_5 = tr_set[tr_set[:,1]==5]
 n_class_5 = class_5.shape[0]
 
 # Downsample classes 0 thru 4 to # samples in class 5
-n_DS = 10000
-class_0_DS = resample(class_0, replace=True, n_samples=n_DS, random_state = 27)
-class_1_DS = resample(class_1, replace=True, n_samples=n_DS, random_state = 27)
-class_2_DS = resample(class_2, replace=True, n_samples=n_DS, random_state = 27)
-class_3_DS = resample(class_3, replace=True, n_samples=n_DS, random_state = 27)
-class_4_DS = resample(class_4, replace=True, n_samples=n_DS, random_state = 27)
+n_samp = 5000
+class_0_RS = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
+class_1_RS = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
+class_2_RS = resample(class_2, replace=True, n_samples=n_samp, random_state = 27)
+class_3_RS = resample(class_3, replace=True, n_samples=n_samp, random_state = 27)
+class_4_RS = resample(class_4, replace=True, n_samples=n_samp, random_state = 27)
 
 ## Upsample class 0,1,5 to 10K samples 
-#class_1_US = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
+#class_1_RS = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
 #class_0_US = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
-#class_5_US = resample(class_5, replace=True, n_samples=n_samp, random_state = 27)
+class_5_RS = resample(class_5, replace=True, n_samples=n_samp, random_state = 27)
 
 # Recombine resampled datasets 
-tr_set_resamp = np.concatenate([class_0, class_1, class_2, class_3, class_4, class_5],axis=0)
+tr_set_resamp = np.concatenate([class_0_RS, class_1_RS, class_2_RS, class_3_RS, class_4_RS, class_5_RS],axis=0)
 
 lyrics_train_resamp = tr_set_resamp[:,0]
 y_train_resamp = tr_set_resamp[:,1]
 
 print('\nData done resampling\n\n')
 
-vectorizer = CountVectorizer(stop_words='english')
+vectorizer = CountVectorizer()
 vectorizer.fit(lyrics_train_resamp)
 
 X_train = vectorizer.transform(lyrics_train_resamp)
@@ -136,7 +136,7 @@ history = model.fit(X_train, years_train,
                     batch_size=my_batch_size)
 
 
-model.save('my_NN_bigger_data_6.h5')
+model.save('my_NN_bigger_data_resampled.h5')
 
 """
 MODEL TYPE: 1 Dense layer, 1 softmax layer 
@@ -156,6 +156,8 @@ Model 4: Same as model 3, including downsampling
 Model 5: Model 4 but add another Dense->Dropout layer
     
 model 6: batch: 10, epochs: 100, just dense-> dropout, stop words, no resamp
+
+my_NN_bigger_data_resampled : resample everything to 5K, batch 10, epochs 100, don't remove stop words
 
 """
 

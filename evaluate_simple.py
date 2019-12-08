@@ -39,65 +39,24 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # $ watch -n 1 nvidia-smi 
 
 
-df = pd.read_csv('dataset_clean_bow.csv')  # TODO: ADD FILE NAME HERE 
+df = pd.read_csv('dataset_clean.csv')   
 
 lyrics = df['Lyrics'].values
 years = df['Year'].values
 
 lyrics_train, lyrics_test, y_train, y_test = train_test_split(lyrics, years, test_size = 0.3, random_state = 1000)
 
-from sklearn.utils import resample 
-
-print('\n\nResampling data to even distributions...')
-
-# recombine for downsampling
-tr_len = lyrics_train.shape[0]
-lyr_tr = lyrics_train.reshape((tr_len,1))
-y_tr = y_train.reshape((tr_len,1))
-tr_set = np.concatenate([lyr_tr,y_tr],axis=1)
-# tr_set[tr_set[:,1] == 0]   <-- like this 
-
-# separate into classes
-class_0 = tr_set[tr_set[:,1]==0]
-class_1 = tr_set[tr_set[:,1]==1]
-class_2 = tr_set[tr_set[:,1]==2]
-class_3 = tr_set[tr_set[:,1]==3]
-class_4 = tr_set[tr_set[:,1]==4]
-class_5 = tr_set[tr_set[:,1]==5]
-
-n_class_5 = class_5.shape[0]
-
-# Downsample classes 0 thru 4 to # samples in class 5
-n_samp = 5000
-class_0_RS = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
-class_1_RS = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
-class_2_RS = resample(class_2, replace=True, n_samples=n_samp, random_state = 27)
-class_3_RS = resample(class_3, replace=True, n_samples=n_samp, random_state = 27)
-class_4_RS = resample(class_4, replace=True, n_samples=n_samp, random_state = 27)
-
-## Upsample class 0,1,5 to 10K samples 
-#class_1_RS = resample(class_1, replace=True, n_samples=n_samp, random_state = 27)
-#class_0_US = resample(class_0, replace=True, n_samples=n_samp, random_state = 27)
-class_5_RS = resample(class_5, replace=True, n_samples=n_samp, random_state = 27)
-
-# Recombine resampled datasets 
-tr_set_resamp = np.concatenate([class_0_RS, class_1_RS, class_2_RS, class_3_RS, class_4_RS, class_5_RS],axis=0)
-
-lyrics_train_resamp = tr_set_resamp[:,0]
-y_train_resamp = tr_set_resamp[:,1]
-
-print('\nData done resampling\n\n')
 
 vectorizer = CountVectorizer()
-vectorizer.fit(lyrics_train_resamp)
+vectorizer.fit(lyrics_train)
 
-X_train = vectorizer.transform(lyrics_train_resamp)
+X_train = vectorizer.transform(lyrics_train)
 X_test = vectorizer.transform(lyrics_test)
 
 # number of classes is 6 if grouping by decade, 11 if grouping by 5 years
 n_classes = 6
 
-years_train = tf.keras.utils.to_categorical(y_train_resamp,num_classes=n_classes)
+years_train = tf.keras.utils.to_categorical(y_train,num_classes=n_classes)
 years_test = tf.keras.utils.to_categorical(y_test,num_classes=n_classes)
 
 input_dim = X_train.shape[1]
@@ -113,7 +72,7 @@ model.summary()
 
 
 # Load weights from saved models 
-model.load_weights('base_model_resampled_data.h5')            ## CHOOSE MODEL TO EVALUATE HERE
+model.load_weights('base_model_small_set.h5')            ## CHOOSE MODEL TO EVALUATE HERE
 
 model.compile(loss='categorical_crossentropy',
               optimizer='adam',
